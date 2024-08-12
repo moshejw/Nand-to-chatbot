@@ -9,7 +9,9 @@ An implementation of the Eliza DOCTOR chatbot using the Nand2Tetris Jack languag
 4. Chat eith ELIZA
 
 # More information and credit
-Eliza is a chatbot from the 1960's. This is an implementation in the Jack language - as part of the [Nand2Tetris course](https://www.nand2tetris.org/). JavaScript source code for Eliza found on [Kenneth Ronkowitz's website](https://web.njit.edu/~ronkowit/eliza.html) and modified for Jack, attribution in js file follows:
+Eliza is a chatbot from the 1960's. This is an implementation in the Jack language - as part of the [Nand2Tetris course](https://www.nand2tetris.org/). JavaScript source code for Eliza found on [Kenneth Ronkowitz's website](https://web.njit.edu/~ronkowit/eliza.html) and modified for Jack, original attribution:
+
 
 Chat Bot by George Dunlop, www.peccavi.com
+
 May be used/modified if credit line is retained (c) 1997 All rights reserved
