@@ -1,0 +1,39 @@
+class Key {
+	field String key;
+	field int idx, end, last;
+	
+	constructor Key new(String k, int i, int e) {
+		let key = k;
+		let idx = i;
+		let end = e;
+		let last = e;
+		
+		return this;
+	}
+	
+	method String getKey() {
+		return key;
+	}
+	
+	method int getIdx() {
+		return idx;
+	}
+	
+	method int getEnd() {
+		return end;
+	}
+	
+	method int getLast() {
+		return last;
+	}
+	
+	method void setLast(int l) {
+		let last = l;
+		return;
+	}
+	
+	method void dispose(){
+		do Memory.deAlloc(this);
+		return;
+	}
+}

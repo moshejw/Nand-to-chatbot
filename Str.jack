@@ -1,0 +1,276 @@
+/** Helper functions for String class */
+
+class Str {
+	static String punct;
+
+	function void init() {
+		let punct = ".,!?:;&@#() ";		// chars: 46, 44, 33, 63, 58, 59, 38, 64, 35, 40, 41, 34
+		do punct.eraseLastChar();
+		do punct.appendChar(String.doubleQuote());
+		
+		return;
+	}
+
+	function String copy(String s) {
+		var String sCopy;
+		
+		let sCopy = String.new(s.length());
+		do Str.appendString(sCopy, s);
+		return sCopy;
+	}
+	
+	/** Concatenate t onto s and return s */
+	function String appendString(String s, String t) {
+		var int i;
+		
+		let i = 0;
+		while (i < t.length()) {
+			do s.appendChar(t.charAt(i));
+			let i = i + 1;
+		}
+		return s;
+	}
+		
+	function boolean areEqual(String s, String t) {
+		var int i, sLength;
+		
+		let sLength = s.length();
+		if (~(sLength = t.length())) { return false; }
+		
+		let i = 0;
+		while (i < sLength) {
+			if (~(s.charAt(i) = t.charAt(i))) { return false; }
+			let i = i + 1;
+		}
+		return true;
+	}
+	
+	/** If sub is a substring of s, return first index in which it starts. Otherwise, return -1 */
+	function int indexOf(String s, String sub) {
+		var int i, j;
+		
+		let i = 0;
+		// Check if we should return i:
+		while ((i + sub.length()) < (s.length() + 1)) {
+			let j = 0;
+			while (j < sub.length()) {
+				if (s.charAt(i + j) = sub.charAt(j)) {
+					let j = j + 1;
+					if (j = sub.length()) { return i; }
+				} else {
+					let j = sub.length();
+				}
+			}
+			let i = i + 1;
+		}
+		return -1;
+	}
+	
+	/** Same as s[i:j] in python */
+	function String subString(String s, int i, int j) {
+		var String sub;
+		
+		let sub = String.new(j - i);
+		while (i < j) {
+			do sub.appendChar(s.charAt(i));
+			let i = i + 1;
+		}
+		return sub;
+	}
+	
+	/** True if c should be trimmed, i.e. it is either space or one of ".", ",", "!", "?", ":" */
+	function boolean trimmedChar(char c) {
+		if (c = 32) { return true; }
+		if (c = 33) { return true; }
+		if (c = 44) { return true; }
+		if (c = 46) { return true; }
+		if (c = 58) { return true; }
+		if (c = 63) { return true; }
+		return false;
+	}
+	
+	/** Modify and return input string with spaces and ".", ",", "!", "?", ":" removed from beginning and end */
+	function String trim(String s) {
+		var int i, loc;
+		
+		let i = s.length();
+		if (i = 0) { return s; }
+		
+		// Remove charcaters from end as needed
+		let i = i - 1;
+		while (Str.trimmedChar(s.charAt(i))) {
+			do s.eraseLastChar();
+			let i = i - 1;
+			if (i = 0) { return s; }
+		}
+		
+		// To remove from end, set loc to position of first char we won't remove
+		let loc = 0;
+		while (Str.trimmedChar(s.charAt(loc))) {
+			let loc = loc + 1;
+		}
+		
+		if (loc = 0) { return s; }
+		let i = 0;
+		while ((i + loc) < s.length()) {
+			do s.setCharAt(i, s.charAt(i + loc));
+			let i = i + 1;
+		}
+		let i = 0;
+		while (i < loc) {
+			do s.eraseLastChar();
+			let i = i + 1;
+		}
+		
+		return s;
+	}
+	
+	/** Return true if c is 33, 34, 35, 38, 40, 41, 44, 46, 58, 59, 63, 64 */
+	function boolean punctChar(char c) {
+		if (c > 64) { return false; }
+		if (c < 36) { return (c > 32); }
+		if (c > 59) { return (c > 62); }
+		if (c > 46) { return (c > 57); }
+		if (c < 40) { return (c = 38); }
+		if (c < 44) {return (c < 42); }
+		return ~(c = 45);
+	}
+	
+	/** Add spaces in beginning and end, then replace every punctuation char 'c' (from punct) with ' c ' */
+	function String pad(String s) {
+		var String padded, temp;
+		var int i, slen;
+		
+		let slen = s.length();
+		let temp = String.new(slen + slen + slen + 2);
+		do temp.appendChar(32);
+		
+		let i = 0;
+		while (i < slen) {
+			if (Str.punctChar(s.charAt(i))) {
+				do temp.appendChar(32);
+				do temp.appendChar(s.charAt(i));
+				do temp.appendChar(32);
+			} else {
+				do temp.appendChar(s.charAt(i));
+			}
+			let i = i + 1;
+		}
+		do temp.appendChar(32);
+		
+		let padded = Str.copy(temp);
+		do temp.dispose();
+		return padded;
+	}
+	
+	/** Replace padded punctuation chars with unpadded, and compress spaces*/
+	function String unPad(String s) {
+		var String sub, target, temp;
+		var char c;
+		var int i;
+		
+		let s = Str.copy(s);
+		let target = "X";
+		let sub = Str.addSpaces(target);
+		let i = punct.length();
+		
+		while (i > 0) {
+			let i = i - 1;
+			let c = punct.charAt(i);
+			do sub.setCharAt(1, c);
+			do target.eraseLastChar();
+			do target.appendChar(c);
+			
+			let temp = Str.replace(s, sub, target);
+			do s.dispose();
+			let s = temp;
+		}
+		
+		do sub.eraseLastChar();
+		do sub.eraseLastChar();
+		do sub.appendChar(32);			// sub is 2 spaces
+		do target.setCharAt(0, 32);		// target is 1 space
+		
+		let i = Str.indexOf(s, sub) + 1;
+		while (i > 0) {
+			let temp = Str.replace(s, sub, target);
+			do s.dispose();
+			let s = temp;
+			let i = Str.indexOf(s, sub) + 1;
+		}
+		do sub.dispose();
+		do target.dispose();
+		
+		return s;
+	}
+
+	/** New string with added spaces in beginning and end */
+	function String addSpaces(String s) {
+		var String t;
+		
+		let t = String.new(s.length() + 2);
+		do t.appendChar(32);
+		do Str.appendString(t, s);
+		do t.appendChar(32);
+		
+		return t;
+	}
+	
+	/** Create a string from s where every instance of sub is replaced by target. */
+	function String replace(String remaining, String sub, String target) {
+		var String worked, temp;
+		var int position, i;
+		
+		let position = Str.indexOf(remaining, sub);
+		if (position < 0) {return Str.copy(remaining); }
+		
+		let worked = "";
+		let remaining = Str.copy(remaining);
+		while ((position + 1) > 0) {
+			let temp = String.new(worked.length() + position + target.length());
+			do Str.appendString(temp, worked);
+			let i = 0;
+			while (i < position) {
+				do temp.appendChar(remaining.charAt(i));
+				let i = i + 1;
+			}
+			do Str.appendString(temp, target);
+			do worked.dispose();
+			let worked = Str.copy(temp);
+			do temp.dispose();
+			let temp = Str.subString(remaining, position + sub.length(), remaining.length());
+			do remaining.dispose();
+			let remaining = Str.copy(temp);
+			do temp.dispose();
+			let position = Str.indexOf(remaining, sub);
+		}
+		
+		let temp = String.new(worked.length() + remaining.length());
+		do Str.appendString(temp, worked);
+		do Str.appendString(temp, remaining);
+		do worked.dispose();
+		do remaining.dispose();
+		
+		return temp;
+	}
+	
+	/** Create a new string where every instance of word1 as a whole word is replaced by word2 */
+	function String replaceWholeWord(String s, String word1, String word2) {
+		var String t;
+		var int i;
+	
+		let s = Str.addSpaces(s);
+		let word1 = Str.addSpaces(word1);
+		let word2 = Str.addSpaces(word2);
+		let t = Str.replace(s, word1, word2);
+		
+		do s.dispose();
+		do word1.dispose();
+		do word2.dispose();
+		
+		let s = Str.subString(t, 1, t.length() - 1);
+		do t.dispose();
+		
+		return s;
+	}
+}

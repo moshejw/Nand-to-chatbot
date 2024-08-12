@@ -1,0 +1,14 @@
+class Main {
+	function void main() {
+		do Str.init();
+		do Util.init();
+		do Eliza.init();
+		
+		//do Tests.runAll();
+		
+		do Eliza.hello();
+		do Eliza.dialog();
+		
+		return;
+	}
+}

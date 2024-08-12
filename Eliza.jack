@@ -1,0 +1,477 @@
+class Eliza {
+	static String eliza_prompt, user_prompt;
+	static String wPrevious, wTopic, sTopic;
+	static Array keywords, responseBank, conjForms;
+	static int maxKey, keyNotFound, maxConj, max2ndConj;
+	static boolean greet;
+
+	function void init() {
+		let eliza_prompt = "E: ";
+		let user_prompt = ">: ";
+		let wPrevious = "";
+		let wTopic = "";
+		let sTopic = "";
+		let greet = false;
+		
+		do Eliza.makeKeywords();
+		do Eliza.makeResponseBank();
+		do Eliza.makeConjForms();
+		
+		return;
+	}
+	
+	function void makeKeywords() {
+		let maxKey = 43;
+		let keyNotFound = maxKey - 1;
+		
+		let keywords = Array.new(maxKey);		
+		let keywords[ 0] = Key.new( "CAN YOU",  		1,  3);
+		let keywords[ 1] = Key.new( "CAN I",    		4,  5);
+		let keywords[ 2] = Key.new( "YOU ARE",  		6,  9);
+		let keywords[ 3] = Key.new( "YOU'RE",   		6,  9);
+		let keywords[ 4] = Key.new( "I DON'T",  		10, 13);
+		let keywords[ 5] = Key.new( "I FEEL",   		14, 16);
+		let keywords[ 6] = Key.new( "WHY DON'T YOU", 17, 19);
+		let keywords[ 7] = Key.new( "WHY CAN'T I", 	20, 21);
+		let keywords[ 8] = Key.new( "ARE YOU",  		22, 24);
+		let keywords[ 9] = Key.new( "I CAN'T",  		25, 27);
+		let keywords[10] = Key.new( "I AM",     		28, 31);
+		let keywords[11] = Key.new( "I'M",      		28, 31);
+		let keywords[12] = Key.new( "YOU",      		32, 34);
+		let keywords[13] = Key.new( "I WANT",   		35, 39);
+		let keywords[14] = Key.new( "WHAT",     		40, 48);
+		let keywords[15] = Key.new( "HOW",      		40, 48);
+		let keywords[16] = Key.new( "WHO",      		40, 48);
+		let keywords[17] = Key.new( "WHERE",    		40, 48);
+		let keywords[18] = Key.new( "WHEN",     		40, 48);
+		let keywords[19] = Key.new( "WHY",      		40, 48);
+		let keywords[20] = Key.new( "NAME",     		49, 50);
+		let keywords[21] = Key.new( "CAUSE",    		51, 54);
+		let keywords[22] = Key.new( "SORRY",    		55, 58);
+		let keywords[23] = Key.new( "DREAM",    		59, 62);
+		let keywords[24] = Key.new( "DREAMS",    		59, 62);
+		let keywords[25] = Key.new( "ELIZA",    		63, 63);
+		let keywords[26] = Key.new( "TODAY",         63, 63);
+		let keywords[27] = Key.new( "MAYBE",    		64, 68);
+		let keywords[28] = Key.new( "NO",       		69, 73);
+		let keywords[29] = Key.new( "YOUR",     		74, 75);
+		let keywords[30] = Key.new( "ALWAYS",   		76, 79);
+		let keywords[31] = Key.new( "THINK",    		80, 82);
+		let keywords[32] = Key.new( "ALIKE",    		83, 89);
+		let keywords[33] = Key.new( "YES",      		90, 92);
+		let keywords[34] = Key.new( "FRIEND",   		93, 98);
+		let keywords[35] = Key.new( "FRIENDS",   		93, 98);
+		let keywords[36] = Key.new( "COMPUTER", 		99, 105);
+		let keywords[37] = Key.new( "HELLO", 	    	117, 118);
+		let keywords[38] = Key.new( "HI",	 	    	117, 118);
+		let keywords[39] = Key.new( "OKAY", 	        83, 119);
+		let keywords[40] = Key.new( "OK",	 	        83, 119);
+		let keywords[41] = Key.new( "REPEAT INPUT", 	113, 116);
+		let keywords[42] = Key.new( "NO KEY FOUND", 	106, 112);
+		
+		return;
+	}
+	
+	function void makeResponseBank(){
+		let responseBank = Array.new(120);
+		let responseBank[  0]="I'll have to get back to you on that<*";
+		let responseBank[  1]="Don't you believe that I can<*";
+		let responseBank[  2]="Is it that you would like to be able to<*";
+		let responseBank[  3]="Do I hear you saying that you want me to be able to<*";
+		let responseBank[  4]="I'm not convinced that you truly want to<*";
+		let responseBank[  5]="Hmmm... you want to be able to<*";
+		let responseBank[  6]="What makes you think I am<*";
+		let responseBank[  7]="Does it please you to think that I am<*";
+		let responseBank[  8]="Perhaps you would like to be<*";
+		let responseBank[  9]="I'm getting the sense that sometimes you actually wish you were<*";
+		let responseBank[ 10]="Don't you really<*";
+		let responseBank[ 11]="Why don't you<*";
+		let responseBank[ 12]="Do you wish to be able to<*";
+		let responseBank[ 13]="Does that trouble you?";
+		let responseBank[ 14]="Tell me more about such feelings.";
+		let responseBank[ 15]="Do you often feel<*";
+		let responseBank[ 16]="Do you enjoy feeling<*";
+		let responseBank[ 17]="Do you really believe I don't<*";
+		let responseBank[ 18]="Perhaps one day I will<@";
+		let responseBank[ 19]="Do you want me to<*";
+		let responseBank[ 20]="Do you think you should be able to<*";
+		let responseBank[ 21]="Why can't you<*";
+		let responseBank[ 22]="Why are you interested in whether or not I am<*";
+		let responseBank[ 23]="Would you prefer if I were not<*";
+		let responseBank[ 24]="Perhaps in your fantasies I am<*";
+		let responseBank[ 25]="How do you know you can't<*";
+		let responseBank[ 26]="Have you tried?";
+		let responseBank[ 27]="Perhaps you can now<*";
+		let responseBank[ 28]="Did you come to me because you are<*";
+		let responseBank[ 29]="How long have you been<*";
+		let responseBank[ 30]="Do you believe it is normal to be<*";
+		let responseBank[ 31]="Do you enjoy being<*";
+		let responseBank[ 32]="We were discussing you, not me.";
+		let responseBank[ 33]="Oh... Let's move on to something else for a bit. <*";
+		let responseBank[ 34]="You're not really talking about me, are you?";
+		let responseBank[ 35]="What would it mean to you if you got<*";
+		let responseBank[ 36]="Why do you want<*";
+		let responseBank[ 37]="Suppose you got<*";
+		let responseBank[ 38]="What if you never got<*";
+		let responseBank[ 39]="I sometimes also want<@";
+		let responseBank[ 40]="Why do you ask?";
+		let responseBank[ 41]="Does that question interest you?";
+		let responseBank[ 42]="What answer would please you the most?";
+		let responseBank[ 43]="What do you think?";
+		let responseBank[ 44]="Are such questions on your mind often?";
+		let responseBank[ 45]="What is it that you really want to know?";
+		let responseBank[ 46]="Have you asked anyone else?";
+		let responseBank[ 47]="Have you asked such questions before?";
+		let responseBank[ 48]="What else comes to mind when you ask that?";
+		let responseBank[ 49]="We don't need names here.";
+		let responseBank[ 50]="No need for names in our session. Continue";
+		let responseBank[ 51]="Is that the real reason?";
+		let responseBank[ 52]="Don't any other reasons come to mind?";
+		let responseBank[ 53]="Does that reason explain anything else?";
+		let responseBank[ 54]="What other reasons might there be?";
+		let responseBank[ 55]="Please don't apologise!";
+		let responseBank[ 56]="Apologies are not necessary.";
+		let responseBank[ 57]="What feelings do you have when you apologise?";
+		let responseBank[ 58]="Don't be so defensive!";
+		let responseBank[ 59]="Interesting. What does that dream suggest to you?";
+		let responseBank[ 60]="Do you often remember your dreams?";
+		let responseBank[ 61]="Are there certain people who regularly appear in your dreams?";
+		let responseBank[ 62]="Do your dreams disturb you or feel more like nightmares?";
+		let responseBank[ 63]="What would you like to discuss in this session?";
+		let responseBank[ 64]="You don't seem quite certain. Am I correct?";
+		let responseBank[ 65]="Why the uncertain tone?";
+		let responseBank[ 66]="Can't you be more positive?";
+		let responseBank[ 67]="You aren't sure?";
+		let responseBank[ 68]="Don't you know?";
+		let responseBank[ 69]="Are you saying NO just to be negative?";
+		let responseBank[ 70]="You are being a bit negative and that won't help us move forward.";
+		let responseBank[ 71]="Why not?";
+		let responseBank[ 72]="Are you sure?";
+		let responseBank[ 73]="Why no?";
+		let responseBank[ 74]="Why are you so concerned about my<*";
+		let responseBank[ 75]="What about your own<*";
+		let responseBank[ 76]="Can you think of a specific example?";
+		let responseBank[ 77]="When?";
+		let responseBank[ 78]="What are you thinking of?";
+		let responseBank[ 79]="Really, always?";
+		let responseBank[ 80]="Do you really think so?";
+		let responseBank[ 81]="But you are not sure you<*";
+		let responseBank[ 82]="Do you doubt you<*";
+		let responseBank[ 83]="In what way?";
+		let responseBank[ 84]="You see a resemblence here? Interesting. Care to go deeper with that?";
+		let responseBank[ 85]="What does the similarity suggest to you?";
+		let responseBank[ 86]="What other connections do you see?";
+		let responseBank[ 87]="Could there really be some connection?";
+		let responseBank[ 88]="How?";
+		let responseBank[ 89]="You seem quite positive.";
+		let responseBank[ 90]="Are you sure about that?";
+		let responseBank[ 91]="I see. Let's explore that a bit more.";
+		let responseBank[ 92]="I understand.";
+		let responseBank[ 93]="Why do you bring up the topic of friends?";
+		let responseBank[ 94]="Do your friends worry you?";
+		let responseBank[ 95]="Do your friends say things to you thay seem unfriendly?";
+		let responseBank[ 96]="Are you sure your friends are truly friends?";
+		let responseBank[ 97]="Perhaps you impose on these people. Is that a possibilty?";
+		let responseBank[ 98]="Perhaps your love for people actually worries you.";
+		let responseBank[ 99]="Do computers make you uncomfortable?";
+		let responseBank[100]="Are you talking about me in particular?";
+		let responseBank[101]="Are you frightened by machines?";
+		let responseBank[102]="Why do you mention computers?";
+		let responseBank[103]="What do you think inanimate things have to do with your problems?";
+		let responseBank[104]="Don't you believe technology can help people?";
+		let responseBank[105]="What is it about technology that worries you?";
+		let responseBank[106]="Would you say that you have psychological problems?";
+		let responseBank[107]="What does that suggest to you?";
+		let responseBank[108]="I see. Let's try another topic and we will come back to that issue later.";
+		let responseBank[109]="I'm not sure I understand you fully.";
+		let responseBank[110]="I think you are blocking what you really want to say.";
+		let responseBank[111]="Can you elaborate on that?";
+		let responseBank[112]="That is an interesting response. Let me make a note of that for next time.";
+		let responseBank[113]="Okay, now you're repeating yourself. That is not moving us forward.";
+		let responseBank[114]="Do you really expect a different answer if you keep repeating yourself?";
+		let responseBank[115]="Let's take a moment here. Think about what you just said and try to rephrase it a bit more specifically.";
+		let responseBank[116]="Again? We need to move on.";
+		let responseBank[117]="And hello to you.";
+		let responseBank[118]="I am pleased to work with you today. Shall we chat?";
+		let responseBank[119]="Good. What else do you want to tell me?";
+		
+		return;
+	}
+	
+	function void makeConjForms() {
+		var Array conj1, conj2, conj3, conj4;
+		
+		let maxConj = 19;
+		let max2ndConj = 7;
+		
+		let conj1 = Array.new(maxConj);
+		let conj2 = Array.new(maxConj);
+		let conj3 = Array.new(max2ndConj);
+		let conj4 = Array.new(max2ndConj);
+		
+		let conj1[0]  = "ARE";
+		let conj2[0]  = "AM";
+		let conj1[1]  = "AM";
+		let conj2[1]  = "ARE";
+		let conj1[2]  = "WERE";
+		let conj2[2]  = "WAS";
+		let conj1[3]  = "WAS";
+		let conj2[3]  = "WERE";
+		let conj1[4]  = "I";
+		let conj2[4]  = "YOU";
+		let conj1[5]  = "ME";
+		let conj2[5]  = "YOU";
+		let conj1[6]  = "YOU";
+		let conj2[6]  = "ME";
+		let conj1[7]  = "MY";
+		let conj2[7]  = "YOUR";
+		let conj1[8]  = "YOUR";
+		let conj2[8]  = "MY";
+		let conj1[9]  = "MINE";
+		let conj2[9]  = "YOUR'S";
+		let conj1[10] = "YOUR'S";
+		let conj2[10] = "MINE";
+		let conj1[11] = "I'M";
+		let conj2[11] = "YOU'RE";
+		let conj1[12] = "YOU'RE";
+		let conj2[12] = "I'M";
+		let conj1[13] = "I'VE";
+		let conj2[13] = "YOU'VE";
+		let conj1[14] = "YOU'VE";
+		let conj2[14] = "I'VE";
+		let conj1[15] = "I'LL";
+		let conj2[15] = "YOU'LL";
+		let conj1[16] = "YOU'LL";
+		let conj2[16] = "I'LL";
+		let conj1[17] = "MYSELF";
+		let conj2[17] = "YOURSELF";
+		let conj1[18] = "YOURSELF";
+		let conj2[18] = "MYSELF";
+		
+		let conj3[0] = "ME AM";
+		let conj4[0] = "I AM";
+		let conj3[1] = "AM ME";
+		let conj4[1] = "AM I";
+		let conj3[2] = "ME CAN";
+		let conj4[2] = "I CAN";
+		let conj3[3] = "CAN ME";
+		let conj4[3] = "CAN I";
+		let conj3[4] = "ME HAVE";
+		let conj4[4] = "I HAVE";
+		let conj3[5] = "ME WILL";
+		let conj4[5] = "I WILL";
+		let conj3[6] = "WILL ME";
+		let conj4[6] = "WILL I";
+		
+		let conjForms = Array.new(4);
+		let conjForms[0] = conj1;
+		let conjForms[1] = conj2;
+		let conjForms[2] = conj3;
+		let conjForms[3] = conj4;
+		
+		return;
+	}
+	
+	function void hello() {
+		var String hello_msg;
+	
+		let hello_msg = "Hello, I am Eliza. I'll be your therapist today.";
+		do Util.printString(eliza_prompt);
+		do Util.printString(hello_msg);
+		do hello_msg.dispose();
+		
+		return;
+	}
+	
+	function void dialog() {	
+		var String input, response;
+	
+		while (true) {
+			do Util.println();
+			let input = Util.readLine(user_prompt);
+			do Util.printString(eliza_prompt);
+			
+			do Sys.wait(512 + Util.randInt(2048));		// Fake time thinking
+			let response = Eliza.listen(input);
+			do Util.printString(response);
+			
+			do input.dispose();
+			do response.dispose();
+		}
+		
+		return;
+	}
+	
+	/** Compute eliza's response to input. */
+	function String listen(String input) {
+		var String wInput, lTopic, temp, response;
+		var int foundkey;
+	
+		do Str.trim(input);
+		if (input.length() = 0) { return "I can't help, if you will not chat with me!"; }
+		
+		let wInput = Str.pad(input);
+		
+		let foundkey = maxKey;
+		if (Str.areEqual(wInput, wPrevious)) {
+			let foundkey = keyNotFound - 1;
+		} else {
+			let foundkey = Eliza.findKey(wInput);
+		}
+		
+		if (foundkey = keyNotFound) {
+			if (~greet) {
+				let greet = true;
+				do wInput.dispose();
+				return "It is nice to be chatting with you.";
+			}
+			do wPrevious.dispose();
+			let wPrevious = wInput;
+			if ((input.length() < 10) & (wTopic.length() > 0) & (~Str.areEqual(wTopic, wPrevious))) {
+				// Mention previous topic:
+				let lTopic = Eliza.conjugate(sTopic);
+					
+				do sTopic.dispose();
+				let sTopic = "";
+				do wTopic.dispose();
+				let wTopic = "";
+				
+				let response = String.new(lTopic.length() + 23);
+				let temp = "OK... '";
+				do Str.appendString(response, temp);
+				do temp.dispose();
+				
+				do Str.appendString(response, lTopic);
+				
+				let temp = "'. Tell me more.";
+				do Str.appendString(response, temp);
+				do temp.dispose();
+				return response;
+			} else {
+				if (input.length() < 10) {
+					return "Tell me more...";
+				} else {
+					return Eliza.phrase(input, keywords[foundkey]);
+				}
+			}
+		} else {
+			if (input.length() > 12) {
+				do sTopic.dispose();
+				let sTopic = Str.copy(input);
+				do wTopic.dispose();
+				let wTopic = Str.copy(wInput);
+			}
+			let greet = true;
+			do wPrevious.dispose();
+			let wPrevious = wInput;
+			return Eliza.phrase(input, keywords[foundkey]);
+		}
+	}
+	
+	/** Find first matching keyword id. */
+	function int findKey(String input) {
+		var int keyid, keyPosition;
+		var Key k;
+		var String temp;
+		
+		let keyid = 0;
+		while (keyid < keyNotFound) {
+			let k = keywords[keyid];
+			let temp = Str.addSpaces(k.getKey());
+			let keyPosition = Str.indexOf(input, temp) + 1;
+			do temp.dispose();
+			if (keyPosition > 0) {
+				return keyid;
+			}
+			let keyid = keyid + 1;
+		}
+	
+		return keyid;
+	}
+	
+	/** Choose a response id based on input and matched keyword */
+	function String phrase(String input, Key k) {
+		var String response, temp, kword;
+		var char lastChar;
+		var int idxmin, idrange, choice, position;
+	
+		let idxmin = k.getIdx();
+		let idrange = (k.getEnd() - idxmin) + 1;
+		let choice = idxmin + Util.randInt(idrange);
+		let position = 5;
+		while ((choice = k.getLast()) & (position > 0)) {
+			let choice = idxmin + Util.randInt(idrange);
+			let position = position - 1;
+		}
+		do k.setLast(choice);
+		
+		let response = responseBank[choice];
+		let lastChar = response.charAt(response.length() - 1);
+		
+		if ((lastChar = 42) | (lastChar = 64)) {	// if response ends with * or @, we need to edit slightly:
+			let temp = Str.pad(input);
+			let kword = Str.addSpaces(k.getKey());
+			let position = Str.indexOf(temp, kword) + (kword.length() - 1);
+			do kword.dispose();
+			let kword = Str.subString(temp, position, temp.length());
+			do temp.dispose();
+			let temp = kword;
+			let kword = Eliza.conjugate(temp);
+			do temp.dispose();
+			let temp = Str.unPad(kword);
+			do kword.dispose();
+			do Str.trim(temp);
+			let kword = Str.addSpaces(temp);
+			do temp.dispose();
+			do kword.eraseLastChar();
+			if (lastChar = 42) {
+				do kword.appendChar(63);	// ?
+			} else {
+				do kword.appendChar(46);	// .
+			}
+			let temp = kword;
+			let kword = "<X";
+			do kword.setCharAt(1, lastChar);	// kword is <* or <@
+			let response = Str.replace(response, kword, temp);
+			do kword.dispose();
+			do temp.dispose();
+			return response;
+		}
+		return Str.copy(response);
+	}
+
+	/** Create conjugated version of string */
+	function String conjugate(String s) {
+		var String temp, conjugated, replaced;
+		var int i, j, m;
+		var Array conj;
+		
+		let conjugated = Str.copy(s);
+		let replaced = "#@& ";
+		do replaced.eraseLastChar();
+		
+		let j = 0;
+		let m = maxConj;
+		while (j < 4) {
+			let i = 0;
+			let conj = conjForms[j];
+			while (i < m) {
+				do replaced.appendChar(i + 65);
+				if (j = 0) {
+					let temp = Str.replaceWholeWord(conjugated, conj[i], replaced);
+				} else {
+					let temp = Str.replaceWholeWord(conjugated, replaced, conj[i]);
+				}
+				do replaced.eraseLastChar();
+				do conjugated.dispose();
+				let conjugated = temp;
+				let i = i + 1;
+			}
+			let j = j + 1;
+			if (j = 2) { let m = max2ndConj; }
+		}
+		do replaced.dispose();
+		
+		return conjugated;
+	}
+}

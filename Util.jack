@@ -1,0 +1,163 @@
+class Util {
+	static int row, col;
+	static int random, base, shift;
+	static Array scr;
+
+	function void init() {
+		let base = 12121;
+		let shift = base + base;
+		let random = base;
+		
+		let scr = 16384;
+		let row = 0;
+		let col = 0;
+		
+		return;
+	}
+
+	function int random() {
+		let random = random + base;
+		if (random = base) {
+			let base = base + shift;
+			let random = base;
+		}
+		return random;
+	}
+	
+	/** Return a random integer in the range 0,...,m-1 */
+	function int randInt(int m) {
+		var int r;
+		
+		let r = Util.random();
+		let r = r - (m * (r / m));
+		if (r < 0) {let r = r + m;}
+		
+		return r;
+	}
+
+	function void printChar(char c) {
+		if (c = 128) {
+			do Util.println();
+		} else {
+			if (c = 129) {
+				do Util.backSpace();
+			} else {
+				do Output.printChar(c);
+				let col = col + 1;
+				if (col > 63) {
+					let col = 0;
+					let row = row + 1;
+					if (row > 21) { do Util.scroll(); }
+				}
+			}
+		}
+		return;
+	}
+
+	function void println() {
+		let col = 0;
+		let row = row + 1;
+		
+		do Output.println();
+		if (row > 21) { do Util.scroll(); }
+		
+		return;
+	}
+	
+	function void backSpace() {
+		let col = col - 1;
+		if (col < 0) {
+			let col = 63;
+			let row = row - 1;
+			if (row < 0) { let row = 22; }
+		}
+		do Output.backSpace();
+		
+		return;
+	}
+
+	function void printString(String s) {
+		var int i, len;
+
+		let len = s.length();
+		while (i < len) {
+			do Util.printChar(s.charAt(i));
+			do Sys.wait(5);
+			let i = i + 1;
+		}
+		return;
+	}
+	
+	function String readLine(String message) {
+		var char prevKey, key;
+		var String line, buffer;
+		var int maxLen;
+		var boolean lineEnded;
+		
+		let maxLen = 96;
+		let line = String.new(maxLen);
+		do Util.printString(message);
+		do Util.printChar(0);
+		
+		while ((~lineEnded)) {
+			let prevKey = key;
+			let key = Keyboard.keyPressed();
+			
+			if (prevKey = key) {
+				do Sys.wait(1);
+				if (key = 0) { do Util.random(); }
+			} else {
+				do Util.backSpace();
+				if (key = 128) {
+					let lineEnded = true;
+					do Util.println();
+				} else {
+					if ((key = 129) | (key = 0)) {
+						if ((line.length() > 0) & (key = 129)) {
+							do line.eraseLastChar();
+							do Util.backSpace();
+						}
+						do Util.printChar(0);
+					} else {
+						if ((line.length() = maxLen) & (maxLen < 512)) {
+							let maxLen = maxLen + 32;
+							let buffer = String.new(maxLen);
+							do Str.appendString(buffer, line);
+							do line.dispose();
+							let line = buffer;
+						}
+						if (line.length() < maxLen) {
+							do line.appendChar(key);
+							do Util.printChar(key);
+							do Util.printChar(0);
+						} else {
+							do Util.printChar(key);
+						}
+					}
+				}
+			}
+		}
+		
+		return line;
+    }
+	
+	function void scroll() {
+		var int i;
+		
+		while (row > 14) {
+			let i = 0;
+			while (i < 7840) {
+				let scr[i] = scr[i + 352];
+				let i = i + 1;
+			}
+			while (i < 8192) {
+				let scr[i] = 0;
+				let i = i + 1;
+			}
+			let row = row - 1;
+		}
+		do Output.moveCursor(row, col);
+		
+		return;
+	}
+}
