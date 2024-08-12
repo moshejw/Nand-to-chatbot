@@ -1,5 +1,5 @@
 # Nand-to-chatbot
-An implementation of the Eliza DOCTOR chatbot on the Nand2Tetris Jack language
+An implementation of the Eliza DOCTOR chatbot using the Nand2Tetris Jack language
 
 # How to run ELIZA
 
