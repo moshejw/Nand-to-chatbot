@@ -100,8 +100,8 @@ class Str {
 		let i = i - 1;
 		while (Str.trimmedChar(s.charAt(i))) {
 			do s.eraseLastChar();
-			let i = i - 1;
 			if (i = 0) { return s; }
+			let i = i - 1;
 		}
 		
 		// To remove from end, set loc to position of first char we won't remove
