@@ -291,7 +291,7 @@ class Eliza {
 			let input = Util.readLine(user_prompt);
 			do Util.printString(eliza_prompt);
 			
-			do Sys.wait(512 + Util.randInt(2048));		// Fake time thinking
+			do Sys.wait(500 + Util.randInt(1500));		// Fake time thinking
 			let response = Eliza.listen(input);
 			do Util.printString(response);
 			
@@ -457,7 +457,7 @@ class Eliza {
 			let conj = conjForms[j];
 			while (i < m) {
 				do replaced.appendChar(i + 65);
-				if (j = 0) {
+				if ((j & 1) = 0) {
 					let temp = Str.replaceWholeWord(conjugated, conj[i], replaced);
 				} else {
 					let temp = Str.replaceWholeWord(conjugated, replaced, conj[i]);
